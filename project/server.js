@@ -157,11 +157,13 @@ app.delete("/deleteProduct", (req, res) => {
   }
 });
 
+//API Endpoint to append data into cart.json file
 app.post("/cart", async (req, res) => {
   try {
     const productId = req.query.id;
     const { quantity } = req.body;
 
+    // Read data from product.json file
     fs.readFile(filePath, "utf8", (err, data) => {
       if (err) {
         return res
@@ -194,6 +196,7 @@ app.post("/cart", async (req, res) => {
             .json({ message: "Error writing product file", error: err });
         }
 
+        //Create a new cart Item
         const newCartItem = {
           c_id: Date.now(), // Generate a unique checkout ID
           p_id: productId,
@@ -240,6 +243,7 @@ app.post("/cart", async (req, res) => {
   }
 });
 
+//API Endpoint to add up all the data and create a order
 app.post("/checkout/order", async (req, res) => {
   try {
     // Read the contents of the cart.json file
@@ -300,6 +304,7 @@ app.post("/checkout/order", async (req, res) => {
   }
 });
 
+//API Endpoint to fetch status of order using ID
 app.get("/orders/status", async (req, res) => {
   try {
     const orderId = req.query.id;
@@ -343,6 +348,7 @@ app.get("/orders/status", async (req, res) => {
   }
 });
 
+//API Endpoint to delete an order using ORDER ID
 app.delete("/orders/cancel", async (req, res) => {
   try {
     const orderId = req.query.id;

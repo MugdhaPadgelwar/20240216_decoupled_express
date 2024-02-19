@@ -13,6 +13,7 @@ const Order = require("./model/orderModel");
 
 app.use(express.json());
 
+//API Endpoint to post a product into database
 app.post("/product", async (req, res) => {
   try {
     const { id, name, description, price, stock, image } = req.body;
@@ -45,6 +46,7 @@ app.post("/product", async (req, res) => {
   }
 });
 
+//API Endpoint to view all products in database
 app.get("/products", async (req, res) => {
   try {
     // Fetch all products from the database
@@ -57,6 +59,7 @@ app.get("/products", async (req, res) => {
   }
 });
 
+//API endpoint to search specific product in database
 app.get("/search", async (req, res) => {
   try {
     const { query } = req.query;
@@ -66,7 +69,7 @@ app.get("/search", async (req, res) => {
       return res.status(400).json({ message: "Search query is required" });
     }
 
-    // Perform a case-insensitive search on both name and description fields
+    // Perform search on both name and description fields
     const products = await Product.find({
       $or: [
         { name: { $regex: query, $options: "i" } },
@@ -82,6 +85,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
+//API Endpoint to delete specific product using ID
 app.delete("/delete", async (req, res) => {
   try {
     const productId = req.query.id;
@@ -108,6 +112,7 @@ app.delete("/delete", async (req, res) => {
   }
 });
 
+//API Endpoint to update the product
 app.put("/product/update", async (req, res) => {
   try {
     const productId = req.query.id;
@@ -156,8 +161,16 @@ app.post("/cart", async (req, res) => {
       return res.status(400).json({ message: "Insufficient stock" });
     }
 
-    // Calculate the price for the checkout record
-    const totalPrice = product.price * quantity;
+    let totalPrice;
+    try {
+      totalPrice = product.price * quantity;
+      if (isNaN(totalPrice)) {
+        throw new Error("Invalid calculation result: totalPrice is NaN");
+      }
+    } catch (calculationError) {
+      console.error("Error calculating totalPrice:", calculationError);
+      return res.status(500).json({ message: "Error calculating totalPrice" });
+    }
 
     // Create a new checkout record
     const newCheckout = new Checkout({
@@ -184,6 +197,7 @@ app.post("/cart", async (req, res) => {
   }
 });
 
+//API endpoint to create an order and delete various data from checkouts table
 app.post("/checkout/order", async (req, res) => {
   try {
     // Get all items from the checkout collection
@@ -206,7 +220,7 @@ app.post("/checkout/order", async (req, res) => {
       o_id: Date.now(), // Generate a unique order ID
       o_date: new Date(),
       o_address: req.body.address,
-      o_status: "Pending",
+      o_status: req.body.status,
       o_totalcost: totalCost,
     });
 
@@ -226,6 +240,8 @@ app.post("/checkout/order", async (req, res) => {
   }
 });
 
+/**API Endpoint to fetch order status from the database with the help of
+specific ID*/
 app.get("/orders/status", async (req, res) => {
   try {
     const orderId = req.query.id;
@@ -246,6 +262,7 @@ app.get("/orders/status", async (req, res) => {
   }
 });
 
+//API Endpoint to cancle an order
 app.delete("/orders/cancle", async (req, res) => {
   try {
     const orderId = req.query.id;
