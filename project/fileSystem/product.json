@@ -1,18 +1,18 @@
 [
   {
-    "id": 2,
-    "name": "Product 2",
-    "description": "Product  2 Description",
-    "price": 900,
-    "stock": 60,
-    "image": "product-image2.jpg"
-  },
-  {
     "id": 3,
     "name": "Product 3",
     "description": "Product  3 Description",
     "price": 1200,
-    "stock": 50,
+    "stock": 30,
     "image": "product-image3.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Product5",
+    "desc": "Description of Product 5",
+    "price": 200,
+    "stock": 130,
+    "img": "https://example.com/product5.jpg"
   }
 ]

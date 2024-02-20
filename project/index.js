@@ -285,6 +285,29 @@ app.delete("/orders/cancle", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+app.get("/api/products", async (req, res) => {
+  try {
+    const productId = req.query.id;
+
+    if (!productId) {
+      res.status(400).json({ message: "Product ID is required" });
+      return;
+    }
+
+    // Find the product by ID in the database
+    const product = await Product.findOne({ id: productId });
+
+    if (!product) {
+      res.status(404).json({ message: "Product not found" });
+    } else {
+      res.status(200).json(product);
+    }
+  } catch (error) {
+    console.error("Error searching for product:", error);
+    res.status(500).json({ message: "Error searching for product" });
+  }
+});
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
